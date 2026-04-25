@@ -6,37 +6,35 @@ struct ContentView: View {
             ZStack {
                 Color(.systemGroupedBackground)
                     .ignoresSafeArea()
-                
+
                 VStack(spacing: 25) {
                     Text("HomeHarmony")
                         .font(.largeTitle)
                         .fontWeight(.bold)
                         .foregroundColor(.blue)
-                    
-                    Text("A simple roommate app for managing chores, groceries, bills, and shared reminders.")
+
+                    Text("A simple roomate app for managing chores, groceries, bills, and shared reminders.")
                         .font(.body)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
-                    
+
                     VStack(spacing: 16) {
-                        NavigationLink(destination: ChoresView()) {
+                        NavigationLink(destination: ChoresView())) {
                             HomeButton(title: "Chores", color: .green)
                         }
                         NavigationLink(destination: GroceryView()) {
                             HomeButton(title: "Grocery List", color: .orange)
                         }
-                        NavigationLink(destination: BillsView()) {
-                            HomeButton(title: "Bills", color: .purple)
-                        }
                         NavigationLink(destination: RemindersView()) {
                             HomeButton(title: "House Reminders", color: .blue)
                         }
                     }
+
                     Spacer()
                 }
                 .padding()
-                .navigationTitle("Dashboard")
             }
+            .navigationTitle("Dashboard")
         }
     }
 }
@@ -44,10 +42,10 @@ struct ContentView: View {
 struct HomeButton: View {
     let title: String
     let color: Color
-    
+
     var body: some View {
         Text(title)
-            .font(.headline)
+            .front(.headline)
             .foregroundColor(.white)
             .frame(maxWidth: .infinity)
             .padding()
