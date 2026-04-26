@@ -5,7 +5,7 @@ struct ExchangeRateResponse: Codable {
 }
 
 class ExchangeRateService {
-    static let appID = "YOUR_APP_ID_HERE"
+    static let appID = "a8ef18010821442f99de7b7440e610ae"
     
     static func fetchRates() async throws -> [String: Double] {
         let url = URL(string: "https://openexchangerates.org/api/latest.json?app_id=\(appID)")!

@@ -3,7 +3,15 @@ import Combine
 import SwiftUI
 
 class GroceryViewModel: ObservableObject {
-    @Published var groceryItems: [GroceryItem] = []
+    @Published var groceryItems: [GroceryItem] = [] {
+        didSet {
+            save()
+        }
+    }
+    
+    init() {
+        load()
+    }
     
     func addItem(name: String, category: String) {
         let newItem = GroceryItem(name: name, category: category)
@@ -16,7 +24,25 @@ class GroceryViewModel: ObservableObject {
         }
     }
     
-    func deleteItem(at offsets: IndexSet) {
-        groceryItems.remove(atOffsets: offsets)
+    func deleteItem(at offsets: IndexSet, in category: String) {
+        let categoryItems = groceryItems.indices.filter {
+            groceryItems[$0].category == category
+        }
+        let indicesToDelete = offsets.map { categoryItems[$0] }
+        groceryItems.remove(atOffsets: IndexSet(indicesToDelete))
+    }
+    
+    // MARK: - Persistence
+    private func save() {
+        if let encoded = try? JSONEncoder().encode(groceryItems) {
+            UserDefaults.standard.set(encoded, forKey: "saved_grocery")
+        }
+    }
+    
+    private func load() {
+        if let data = UserDefaults.standard.data(forKey: "saved_grocery"),
+           let decoded = try? JSONDecoder().decode([GroceryItem].self, from: data) {
+            groceryItems = decoded
+        }
     }
 }
