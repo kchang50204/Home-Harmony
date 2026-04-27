@@ -40,4 +40,4 @@ HomeHarmony helps people living together stay organized by keeping track of hous
 ## Team
 - Kevin Chang
 - Frank Cruz
-- [Member 3 Name]
+- Derek Castonon
