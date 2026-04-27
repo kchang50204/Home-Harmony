@@ -1,9 +1,13 @@
 import SwiftUI
 
 struct DashboardView: View {
-    @StateObject var choreVM = ChoreViewModel()
-    @StateObject var groceryVM = GroceryViewModel()
-    @StateObject var billVM = BillViewModel()
+    @EnvironmentObject var choreVM: ChoreViewModel
+    @EnvironmentObject var groceryVM: GroceryViewModel
+    @EnvironmentObject var billVM: BillViewModel
+    
+    func isOverdue(_ date: Date) -> Bool {
+        Calendar.current.startOfDay(for: date) < Calendar.current.startOfDay(for: Date())
+    }
     
     var body: some View {
         NavigationStack {
@@ -24,8 +28,9 @@ struct DashboardView: View {
                     .background(Color(.systemBackground))
                     .cornerRadius(16)
                     .shadow(color: .black.opacity(0.05), radius: 8)
+                    .padding(.horizontal)
                     
-                    // Summary Cards Row
+                    // Summary Cards
                     HStack(spacing: 12) {
                         SummaryCard(
                             title: "Chores",
@@ -49,8 +54,9 @@ struct DashboardView: View {
                             icon: "dollarsign.circle.fill"
                         )
                     }
+                    .padding(.horizontal)
                     
-                    // Pending Chores Section
+                    // Pending Chores
                     if !choreVM.chores.filter({ !$0.isCompleted }).isEmpty {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Pending Chores")
@@ -69,9 +75,17 @@ struct DashboardView: View {
                                             .foregroundColor(.gray)
                                     }
                                     Spacer()
-                                    Text(chore.dueDate.formatted(date: .abbreviated, time: .omitted))
-                                        .font(.caption)
-                                        .foregroundColor(.gray)
+                                    VStack(alignment: .trailing) {
+                                        Text(chore.dueDate.formatted(date: .abbreviated, time: .omitted))
+                                            .font(.caption)
+                                            .foregroundColor(isOverdue(chore.dueDate) ? .red : .gray)
+                                        if isOverdue(chore.dueDate) {
+                                            Text("Overdue")
+                                                .font(.caption2)
+                                                .foregroundColor(.red)
+                                                .fontWeight(.bold)
+                                        }
+                                    }
                                 }
                                 .padding()
                                 .background(Color(.systemBackground))
@@ -82,7 +96,7 @@ struct DashboardView: View {
                         }
                     }
                     
-                    // Upcoming Bills Section
+                    // Upcoming Bills
                     if !billVM.bills.isEmpty {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Upcoming Bills")
@@ -98,7 +112,13 @@ struct DashboardView: View {
                                             .fontWeight(.medium)
                                         Text("Due: \(bill.dueDate.formatted(date: .abbreviated, time: .omitted))")
                                             .font(.caption)
-                                            .foregroundColor(.gray)
+                                            .foregroundColor(isOverdue(bill.dueDate) ? .red : .gray)
+                                        if isOverdue(bill.dueDate) {
+                                            Text("Overdue")
+                                                .font(.caption2)
+                                                .foregroundColor(.red)
+                                                .fontWeight(.bold)
+                                        }
                                     }
                                     Spacer()
                                     Text("$\(String(format: "%.2f", bill.amount))")
@@ -124,7 +144,7 @@ struct DashboardView: View {
                             HStack {
                                 Image(systemName: "cart.fill")
                                     .foregroundColor(.orange)
-                                Text("\(groceryVM.groceryItems.filter { !$0.isPurchased }.count) items remaining out of \(groceryVM.groceryItems.count)")
+                                Text("\(groceryVM.groceryItems.filter { !$0.isPurchased }.count) of \(groceryVM.groceryItems.count) items remaining")
                                     .font(.subheadline)
                                 Spacer()
                             }

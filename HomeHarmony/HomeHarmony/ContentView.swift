@@ -4,25 +4,15 @@ struct ContentView: View {
     var body: some View {
         TabView {
             DashboardView()
-                .tabItem {
-                    Label("Home", systemImage: "house.fill")
-                }
+                .tabItem { Label("Home", systemImage: "house.fill") }
             ChoresView()
-                .tabItem {
-                    Label("Chores", systemImage: "checkmark.circle.fill")
-                }
+                .tabItem { Label("Chores", systemImage: "checkmark.circle.fill") }
             GroceryView()
-                .tabItem {
-                    Label("Grocery", systemImage: "cart.fill")
-                }
+                .tabItem { Label("Grocery", systemImage: "cart.fill") }
             BillsView()
-                .tabItem {
-                    Label("Bills", systemImage: "dollarsign.circle.fill")
-                }
+                .tabItem { Label("Bills", systemImage: "dollarsign.circle.fill") }
             RemindersView()
-                .tabItem {
-                    Label("Reminders", systemImage: "bell.fill")
-                }
+                .tabItem { Label("Reminders", systemImage: "bell.fill") }
         }
     }
 }

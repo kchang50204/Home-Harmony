@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ChoresView: View {
-    @StateObject var viewModel = ChoreViewModel()
+    @EnvironmentObject var viewModel: ChoreViewModel
     @State private var showingAddChore = false
     @State private var showCompleted = true
     @State private var newTitle = ""

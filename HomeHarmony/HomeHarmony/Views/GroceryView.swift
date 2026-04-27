@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct GroceryView: View {
-    @StateObject var viewModel = GroceryViewModel()
+    @EnvironmentObject var viewModel: GroceryViewModel
     @State private var showingAddItem = false
     @State private var newItemName = ""
     @State private var newCategory = "General"

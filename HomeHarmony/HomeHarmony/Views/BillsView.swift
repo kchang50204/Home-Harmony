@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct BillsView: View {
-    @StateObject var viewModel = BillViewModel()
+    @EnvironmentObject var viewModel: BillViewModel
     @State private var showingAddBill = false
     @State private var newBillName = ""
     @State private var newAmount = ""
@@ -46,9 +46,17 @@ struct BillsView: View {
                                         .font(.headline)
                                         .foregroundColor(.purple)
                                 }
-                                Text("Due: \(bill.dueDate.formatted(date: .abbreviated, time: .omitted))")
-                                    .font(.caption)
-                                    .foregroundColor(.gray)
+                                HStack {
+                                    Text("Due: \(bill.dueDate.formatted(date: .abbreviated, time: .omitted))")
+                                        .font(.caption)
+                                        .foregroundColor(Calendar.current.startOfDay(for: bill.dueDate) < Calendar.current.startOfDay(for: Date()) ? .red : .gray)
+                                    if Calendar.current.startOfDay(for: bill.dueDate) < Calendar.current.startOfDay(for: Date()) {
+                                        Text("Overdue")
+                                            .font(.caption2)
+                                            .fontWeight(.bold)
+                                            .foregroundColor(.red)
+                                    }
+                                }
                                 Text("Split: $\(String(format: "%.2f", bill.amount / Double(roommates.count))) per person")
                                     .font(.caption)
                                     .foregroundColor(.blue)
