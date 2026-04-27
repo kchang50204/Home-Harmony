@@ -28,7 +28,7 @@ class BillViewModel: ObservableObject {
         bills.remove(atOffsets: offsets)
     }
     
-    private func save() {
+    func save() {
         if let encoded = try? JSONEncoder().encode(bills) {
             UserDefaults.standard.set(encoded, forKey: "saved_bills")
         }

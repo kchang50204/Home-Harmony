@@ -8,9 +8,14 @@ struct BillsView: View {
     @State private var newDueDate = Date()
     @State private var exchangeRate: Double? = nil
     @State private var selectedCurrency = "EUR"
+    @State private var numberOfPeople = 2
+    @State private var peopleNames: [String] = ["", ""]
 
     let currencies = ["EUR", "GBP", "JPY", "CAD", "AUD", "MXN"]
-    let roommates = ["Kevin", "Frank", "Member 3"]
+
+    var validPeople: [String] {
+        peopleNames.filter { !$0.trimmingCharacters(in: .whitespaces).isEmpty }
+    }
 
     var body: some View {
         NavigationStack {
@@ -57,29 +62,28 @@ struct BillsView: View {
                                             .foregroundColor(.red)
                                     }
                                 }
-                                Text("Split: $\(String(format: "%.2f", bill.amount / Double(roommates.count))) per person")
-                                    .font(.caption)
-                                    .foregroundColor(.blue)
-                                if let rate = exchangeRate {
-                                    Text("\(selectedCurrency): \(String(format: "%.2f", bill.amount * rate))")
+                                if !bill.paidBy.isEmpty {
+                                    let splitAmount = bill.amount / Double(bill.paidBy.count)
+                                    Text("Split \(bill.paidBy.count) ways: $\(String(format: "%.2f", splitAmount)) per person")
                                         .font(.caption)
-                                        .foregroundColor(.green)
-                                }
-                                HStack {
-                                    ForEach(roommates, id: \.self) { roommate in
-                                        let paid = bill.paidBy.contains(roommate)
-                                        Button(action: {
-                                            viewModel.togglePaid(bill: bill, roommate: roommate)
-                                        }) {
-                                            Text(roommate)
-                                                .font(.caption)
-                                                .padding(.horizontal, 8)
-                                                .padding(.vertical, 4)
-                                                .background(paid ? Color.green : Color.gray.opacity(0.3))
-                                                .foregroundColor(paid ? .white : .primary)
-                                                .cornerRadius(8)
+                                        .foregroundColor(.blue)
+                                    if let rate = exchangeRate {
+                                        Text("\(selectedCurrency): \(String(format: "%.2f", bill.amount * rate))")
+                                            .font(.caption)
+                                            .foregroundColor(.green)
+                                    }
+                                    ScrollView(.horizontal, showsIndicators: false) {
+                                        HStack {
+                                            ForEach(bill.paidBy, id: \.self) { person in
+                                                Text(person)
+                                                    .font(.caption)
+                                                    .padding(.horizontal, 8)
+                                                    .padding(.vertical, 4)
+                                                    .background(Color.green.opacity(0.2))
+                                                    .foregroundColor(.green)
+                                                    .cornerRadius(8)
+                                            }
                                         }
-                                        .buttonStyle(.plain)
                                     }
                                 }
                             }
@@ -106,22 +110,53 @@ struct BillsView: View {
                                 .keyboardType(.decimalPad)
                             DatePicker("Due date", selection: $newDueDate, displayedComponents: .date)
                         }
+
+                        Section("Split Between") {
+                            Stepper("Number of people: \(numberOfPeople)", value: $numberOfPeople, in: 1...10)
+                                .onChange(of: numberOfPeople) { newValue in
+                                    if newValue > peopleNames.count {
+                                        peopleNames.append(contentsOf: Array(repeating: "", count: newValue - peopleNames.count))
+                                    } else {
+                                        peopleNames = Array(peopleNames.prefix(newValue))
+                                    }
+                                }
+                            ForEach(0..<numberOfPeople, id: \.self) { index in
+                                TextField("Person \(index + 1) name", text: Binding(
+                                    get: { index < peopleNames.count ? peopleNames[index] : "" },
+                                    set: { if index < peopleNames.count { peopleNames[index] = $0 } }
+                                ))
+                            }
+                            if !newAmount.isEmpty, let amount = Double(newAmount), numberOfPeople > 0 {
+                                Text("Each person pays: $\(String(format: "%.2f", amount / Double(numberOfPeople)))")
+                                    .font(.caption)
+                                    .foregroundColor(.blue)
+                            }
+                        }
                     }
                     .navigationTitle("Add Bill")
                     .toolbar {
                         ToolbarItem(placement: .confirmationAction) {
                             Button("Add") {
-                                if let amount = Double(newAmount) {
-                                    viewModel.addBill(name: newBillName, amount: amount, dueDate: newDueDate)
+                                if let amount = Double(newAmount), !newBillName.isEmpty {
+                                    var bill = Bill(name: newBillName, amount: amount, dueDate: newDueDate)
+                                    bill.paidBy = validPeople.isEmpty ? (1...numberOfPeople).map { "Person \($0)" } : validPeople
+                                    viewModel.bills.append(bill)
+                                    viewModel.save()
                                     newBillName = ""
                                     newAmount = ""
                                     newDueDate = Date()
+                                    numberOfPeople = 2
+                                    peopleNames = ["", ""]
                                     showingAddBill = false
                                 }
                             }
                         }
                         ToolbarItem(placement: .cancellationAction) {
-                            Button("Cancel") { showingAddBill = false }
+                            Button("Cancel") {
+                                numberOfPeople = 2
+                                peopleNames = ["", ""]
+                                showingAddBill = false
+                            }
                         }
                     }
                 }
