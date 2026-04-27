@@ -24,7 +24,6 @@ struct ContentView: View {
                     Label("Reminders", systemImage: "bell.fill")
                 }
         }
-        .accentColor(Color("AccentTerracotta"))
     }
 }
 
