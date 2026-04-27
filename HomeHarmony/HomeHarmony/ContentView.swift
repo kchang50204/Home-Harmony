@@ -2,54 +2,29 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        NavigationStack {
-            ZStack {
-                Color(.systemGroupedBackground)
-                    .ignoresSafeArea()
-                VStack(spacing: 25) {
-                    Text("HomeHarmony")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .foregroundColor(.blue)
-                    Text("A simple roommate app for managing chores, groceries, bills, and shared reminders.")
-                        .font(.body)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal)
-                    VStack(spacing: 16) {
-                        NavigationLink(destination: ChoresView()) {
-                            HomeButton(title: "Chores", color: .green)
-                        }
-                        NavigationLink(destination: GroceryView()) {
-                            HomeButton(title: "Grocery List", color: .orange)
-                        }
-                        NavigationLink(destination: BillsView()) {
-                            HomeButton(title: "Bills", color: .purple)
-                        }
-                        NavigationLink(destination: RemindersView()) {
-                            HomeButton(title: "House Reminders", color: .blue)
-                        }
-                    }
-                    Spacer()
+        TabView {
+            DashboardView()
+                .tabItem {
+                    Label("Home", systemImage: "house.fill")
                 }
-                .padding()
-                .navigationTitle("Dashboard")
-            }
+            ChoresView()
+                .tabItem {
+                    Label("Chores", systemImage: "checkmark.circle.fill")
+                }
+            GroceryView()
+                .tabItem {
+                    Label("Grocery", systemImage: "cart.fill")
+                }
+            BillsView()
+                .tabItem {
+                    Label("Bills", systemImage: "dollarsign.circle.fill")
+                }
+            RemindersView()
+                .tabItem {
+                    Label("Reminders", systemImage: "bell.fill")
+                }
         }
-    }
-}
-
-struct HomeButton: View {
-    let title: String
-    let color: Color
-    var body: some View {
-        Text(title)
-            .font(.headline)
-            .foregroundColor(.white)
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(color)
-            .cornerRadius(12)
-            .shadow(radius: 2)
+        .accentColor(Color("AccentTerracotta"))
     }
 }
 
